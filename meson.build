@@ -9,7 +9,13 @@ sources = [
   'CAS/CAS.h'
 ]
 
-vapoursynth_dep = dependency('vapoursynth').partial_dependency(compile_args: true, includes: true)
+if build_machine.system() == 'windows'
+  vapoursynth_dep = []
+  install_dir = 'installed'  # dummy
+else
+  vapoursynth_dep = dependency('vapoursynth').partial_dependency(compile_args: true, includes: true)
+  install_dir = join_paths(vapoursynth_dep.get_pkgconfig_variable('libdir'), 'vapoursynth')
+endif
 
 libs = []
 
@@ -58,6 +64,6 @@ shared_module('cas', sources,
   dependencies: vapoursynth_dep,
   link_with: libs,
   install: true,
-  install_dir: join_paths(vapoursynth_dep.get_pkgconfig_variable('libdir'), 'vapoursynth'),
+  install_dir: install_dir,
   gnu_symbol_visibility: 'hidden'
 )
